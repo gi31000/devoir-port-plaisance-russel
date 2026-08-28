@@ -24,10 +24,24 @@ app.use(session({
 
 
 const catwayRoutes = require('./src/routes/catwayRoutes');
-app.use('/catways', catwayRoutes);
+
 
 const reservationRoutes = require('./src/routes/reservationRoutes');
-app.use('/catways/:id/reservations', reservationRoutes);
+
+
+const userRoutes = require('./src/routes/userRoutes');
+
+
+const { login, logout } = require('./src/controllers/authController');
+app.post('/login', login);
+app.get('/logout', logout);
+
+
+const isAuthenticated = require('./src/middleware/auth');
+app.use('/catways', isAuthenticated, catwayRoutes);
+app.use('/catways/:id/reservations', isAuthenticated, reservationRoutes);
+app.use('/users', isAuthenticated, userRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
