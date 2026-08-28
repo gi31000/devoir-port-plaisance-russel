@@ -36,7 +36,45 @@ const userRoutes = require('./src/routes/userRoutes');
 
 
 const { login, logout } = require('./src/controllers/authController');
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Connecte un utilisateur et crée une session
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Connexion réussie
+ *       400:
+ *         description: Champs manquants
+ *       401:
+ *         description: Identifiants invalides
+ */
 app.post('/login', login);
+
+/**
+ * @swagger
+ * /logout:
+ *   get:
+ *     summary: Déconnecte l'utilisateur (détruit la session) et redirige vers l'accueil
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirection vers la page d'accueil
+ */
 app.get('/logout', logout);
 
 
@@ -98,6 +136,10 @@ app.get('/dashboard/users', isPageAuthenticated, async (req, res, next) => {
   }
 });
 
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./src/config/swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
