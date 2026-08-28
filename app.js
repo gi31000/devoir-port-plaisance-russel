@@ -22,11 +22,11 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.get('/', (req, res) => {
-  res.send('Ca marche !');
-});
+
+const catwayRoutes = require('./src/routes/catwayRoutes');
+app.use('/catways', catwayRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Serveur démarré sur le port ${PORT}`);
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
