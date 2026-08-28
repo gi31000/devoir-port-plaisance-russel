@@ -26,6 +26,9 @@ app.use(session({
 const catwayRoutes = require('./src/routes/catwayRoutes');
 app.use('/catways', catwayRoutes);
 
+const reservationRoutes = require('./src/routes/reservationRoutes');
+app.use('/catways/:id/reservations', reservationRoutes);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
