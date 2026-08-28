@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Utilisateurs - Port de Plaisance Russell</title>
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Tableau de bord</a> |
+    <a href="/dashboard/catways">Catways</a> |
+    <a href="/dashboard/reservations">Réservations</a> |
+    <a href="/dashboard/users">Utilisateurs</a> |
+    <a href="/api-docs">Documentation API</a> |
+    <a href="/logout">Déconnexion</a>
+  </nav>
+
+  <h1>Gestion des utilisateurs</h1>
+
+  <h2>Créer un utilisateur</h2>
+  <form id="createForm">
+    <label>Nom d'utilisateur : <input type="text" id="username" required></label>
+    <label>Email : <input type="email" id="email" required></label>
+    <label>Mot de passe : <input type="password" id="password" required minlength="8"></label>
+    <button type="submit">Créer</button>
+  </form>
+  <p id="createError" style="color:red;"></p>
+
+  <h2>Liste des utilisateurs</h2>
+  <table border="1">
+    <thead>
+      <tr><th>Nom d'utilisateur</th><th>Email</th><th>Modifier</th><th>Supprimer</th></tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr>
+          <td><%= u.username %></td>
+          <td><%= u.email %></td>
+          <td>
+            <form class="updateForm" data-email="<%= u.email %>">
+              <input type="text" name="username" value="<%= u.username %>" size="10">
+              <input type="password" name="password" placeholder="(inchangé si vide)" size="10">
+              <button type="submit">OK</button>
+            </form>
+          </td>
+          <td>
+            <button class="deleteBtn" data-email="<%= u.email %>">Supprimer</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <script>
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        document.getElementById('createError').textContent = data.message;
+      }
+    });
+
+    document.querySelectorAll('.updateForm').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = form.dataset.email;
+        const body = { username: form.username.value };
+        if (form.password.value) {
+          body.password = form.password.value;
+        }
+        await fetch(`/users/${encodeURIComponent(email)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        window.location.reload();
+      });
+    });
+
+    document.querySelectorAll('.deleteBtn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const email = btn.dataset.email;
+        await fetch(`/users/${encodeURIComponent(email)}`, { method: 'DELETE' });
+        window.location.reload();
+      });
+    });
+  </script>
+</body>
+</html>

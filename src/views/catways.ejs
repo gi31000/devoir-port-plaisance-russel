@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Catways - Port de Plaisance Russell</title>
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Tableau de bord</a> |
+    <a href="/dashboard/catways">Catways</a> |
+    <a href="/dashboard/reservations">Réservations</a> |
+    <a href="/dashboard/users">Utilisateurs</a> |
+    <a href="/api-docs">Documentation API</a> |
+    <a href="/logout">Déconnexion</a>
+  </nav>
+
+  <h1>Gestion des catways</h1>
+
+  <h2>Créer un catway</h2>
+  <form id="createForm">
+    <label>Numéro : <input type="number" id="catwayNumber" required></label>
+    <label>Type :
+      <select id="catwayType" required>
+        <option value="long">long</option>
+        <option value="short">short</option>
+      </select>
+    </label>
+    <label>État : <input type="text" id="catwayState" required></label>
+    <button type="submit">Créer</button>
+  </form>
+  <p id="createError" style="color:red;"></p>
+
+  <h2>Liste des catways</h2>
+  <table border="1">
+    <thead>
+      <tr><th>Numéro</th><th>Type</th><th>État</th><th>Supprimer</th></tr>
+    </thead>
+    <tbody>
+      <% catways.forEach(c => { %>
+        <tr>
+          <td><%= c.catwayNumber %></td>
+          <td><%= c.catwayType %></td>
+          <td>
+            <form class="updateForm" data-number="<%= c.catwayNumber %>">
+              <input type="text" name="catwayState" value="<%= c.catwayState %>">
+              <button type="submit">Modifier</button>
+            </form>
+          </td>
+          <td>
+            <button class="deleteBtn" data-number="<%= c.catwayNumber %>">Supprimer</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <script>
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const catwayNumber = document.getElementById('catwayNumber').value;
+      const catwayType = document.getElementById('catwayType').value;
+      const catwayState = document.getElementById('catwayState').value;
+
+      const res = await fetch('/catways', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ catwayNumber, catwayType, catwayState }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        document.getElementById('createError').textContent = data.message;
+      }
+    });
+
+    document.querySelectorAll('.updateForm').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const number = form.dataset.number;
+        const catwayState = form.catwayState.value;
+        await fetch(`/catways/${number}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ catwayState }),
+        });
+        window.location.reload();
+      });
+    });
+
+    document.querySelectorAll('.deleteBtn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const number = btn.dataset.number;
+        await fetch(`/catways/${number}`, { method: 'DELETE' });
+        window.location.reload();
+      });
+    });
+  </script>
+</body>
+</html>

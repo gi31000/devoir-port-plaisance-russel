@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Réservations - Port de Plaisance Russell</title>
+</head>
+<body>
+  <nav>
+    <a href="/dashboard">Tableau de bord</a> |
+    <a href="/dashboard/catways">Catways</a> |
+    <a href="/dashboard/reservations">Réservations</a> |
+    <a href="/dashboard/users">Utilisateurs</a> |
+    <a href="/api-docs">Documentation API</a> |
+    <a href="/logout">Déconnexion</a>
+  </nav>
+
+  <h1>Gestion des réservations</h1>
+
+  <h2>Créer une réservation</h2>
+  <form id="createForm">
+    <label>Catway :
+      <select id="catwayNumber" required>
+        <% catways.forEach(c => { %>
+          <option value="<%= c.catwayNumber %>"><%= c.catwayNumber %> (<%= c.catwayType %>)</option>
+        <% }) %>
+      </select>
+    </label>
+    <label>Client : <input type="text" id="clientName" required></label>
+    <label>Bateau : <input type="text" id="boatName" required></label>
+    <label>Début : <input type="date" id="startDate" required></label>
+    <label>Fin : <input type="date" id="endDate" required></label>
+    <button type="submit">Créer</button>
+  </form>
+  <p id="createError" style="color:red;"></p>
+
+  <h2>Liste des réservations</h2>
+  <table border="1">
+    <thead>
+      <tr><th>Catway</th><th>Client</th><th>Bateau</th><th>Début</th><th>Fin</th><th>Modifier</th><th>Supprimer</th></tr>
+    </thead>
+    <tbody>
+      <% reservations.forEach(r => { %>
+        <tr>
+          <td><%= r.catwayNumber %></td>
+          <td><%= r.clientName %></td>
+          <td><%= r.boatName %></td>
+          <td><%= r.startDate.toLocaleDateString('fr-FR') %></td>
+          <td><%= r.endDate.toLocaleDateString('fr-FR') %></td>
+          <td>
+            <form class="updateForm" data-catway="<%= r.catwayNumber %>" data-id="<%= r._id %>">
+              <input type="text" name="clientName" value="<%= r.clientName %>" size="8">
+              <input type="text" name="boatName" value="<%= r.boatName %>" size="8">
+              <button type="submit">OK</button>
+            </form>
+          </td>
+          <td>
+            <button class="deleteBtn" data-catway="<%= r.catwayNumber %>" data-id="<%= r._id %>">Supprimer</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <script>
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const catwayNumber = document.getElementById('catwayNumber').value;
+      const clientName = document.getElementById('clientName').value;
+      const boatName = document.getElementById('boatName').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      const res = await fetch(`/catways/${catwayNumber}/reservations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientName, boatName, startDate, endDate }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        document.getElementById('createError').textContent = data.message;
+      }
+    });
+
+    document.querySelectorAll('.updateForm').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const catwayNumber = form.dataset.catway;
+        const id = form.dataset.id;
+        await fetch(`/catways/${catwayNumber}/reservations/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientName: form.clientName.value, boatName: form.boatName.value }),
+        });
+        window.location.reload();
+      });
+    });
+
+    document.querySelectorAll('.deleteBtn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const catwayNumber = btn.dataset.catway;
+        const id = btn.dataset.id;
+        await fetch(`/catways/${catwayNumber}/reservations/${id}`, { method: 'DELETE' });
+        window.location.reload();
+      });
+    });
+  </script>
+</body>
+</html>

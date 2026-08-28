@@ -5,4 +5,11 @@ const isAuthenticated = (req, res, next) => {
   next();
 };
 
-module.exports = isAuthenticated;
+const isPageAuthenticated = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.redirect('/');
+    }
+    next();
+};
+
+module.exports = { isAuthenticated, isPageAuthenticated };
