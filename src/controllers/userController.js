@@ -2,6 +2,15 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 
+/**
+ * Récupère la liste de tous les utilisateurs.
+ * @route GET /users
+ * @param {Object} req - Requête Express.
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la liste des utilisateurs.
+ */
+
 const getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find();
@@ -10,6 +19,16 @@ const getAllUsers = async (req, res, next) => {
         next(error);
     }
 };
+
+
+/**
+ * Récupère un utilisateur précis via son email.
+ * @route GET /users/:email
+ * @param {Object} req - Requête Express (req.params.email).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant l'utilisateur, ou 404 si introuvable.
+ */
 
 const getUserByEmail = async (req, res, next) => {
     try {
@@ -22,6 +41,16 @@ const getUserByEmail = async (req, res, next) => {
         next(error);
     }
 };
+
+
+/**
+ * Crée un nouvel utilisateur (mot de passe haché avec bcrypt avant sauvegarde).
+ * @route POST /users
+ * @param {Object} req - Requête Express (req.body = { username, email, password }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant l'utilisateur créé, sans le mot de passe (201).
+ */
 
 const createUser = async (req, res, next) => {
     try {
@@ -52,6 +81,15 @@ const createUser = async (req, res, next) => {
 };
 
 
+/**
+ * Modifie un utilisateur existant (champs optionnels ; le mot de passe est re-haché s'il est fourni).
+ * @route PUT /users/:email
+ * @param {Object} req - Requête Express (req.body = { username?, email?, password? }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant l'utilisateur modifié, ou 404 si introuvable.
+ */
+
 const updateUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -75,6 +113,15 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+
+/**
+ * Supprime un utilisateur existant.
+ * @route DELETE /users/:email
+ * @param {Object} req - Requête Express (req.params.email).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Confirmation de suppression, ou 404 si introuvable.
+ */
 
 const deleteUser = async (req, res, next) => {
   try {

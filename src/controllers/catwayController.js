@@ -1,6 +1,15 @@
 const Catway = require('../models/catway');;
 
 
+/**
+ * Récupère la liste de tous les catways.
+ * @route GET /catways
+ * @param {Object} req - Requête Express.
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la liste des catways.
+ */
+
 const getAllCatways = async (req, res, next) => {
   try {
     const Catways = await Catway.find();
@@ -10,6 +19,14 @@ const getAllCatways = async (req, res, next) => {
   }
 };
 
+/**
+ * Récupère un catway précis via son numéro.
+ * @route GET /catways/:id
+ * @param {Object} req - Requête Express (req.params.id = numéro du catway).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant le catway, ou 404 si introuvable.
+ */
 
 const getCatwayById = async (req, res, next) => {
     try {
@@ -24,7 +41,14 @@ const getCatwayById = async (req, res, next) => {
     }
 };
 
-
+/**
+ * Crée un nouveau catway.
+ * @route POST /catways
+ * @param {Object} req - Requête Express (req.body = { catwayNumber, catwayType, catwayState }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant le catway créé (201).
+ */
 const createCatway = async (req, res, next) => {
   try {
     const { catwayNumber, catwayType, catwayState } = req.body; 
@@ -40,6 +64,15 @@ const createCatway = async (req, res, next) => {
   } 
 };
 
+
+/**
+ * Modifie l'état d'un catway existant (numéro et type non modifiables).
+ * @route PUT /catways/:id
+ * @param {Object} req - Requête Express (req.body = { catwayState }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant le catway modifié, ou 404 si introuvable.
+ */
 
 const updateCatway = async (req, res, next) => {
   try {
@@ -61,6 +94,15 @@ const updateCatway = async (req, res, next) => {
   }
 };
 
+
+/**
+ * Supprime un catway existant.
+ * @route DELETE /catways/:id
+ * @param {Object} req - Requête Express (req.params.id = numéro du catway).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Confirmation de suppression, ou 404 si introuvable.
+ */
 
 const deleteCatway = async (req, res, next) => {
   try {

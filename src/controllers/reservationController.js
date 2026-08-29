@@ -1,6 +1,16 @@
 const Reservation = require('../models/reservation');
 const Catway = require('../models/catway');
 
+
+/**
+ * Récupère la liste des réservations d'un catway donné.
+ * @route GET /catways/:id/reservations
+ * @param {Object} req - Requête Express (req.params.id = numéro du catway).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la liste des réservations.
+ */
+
 const getReservationsByCatway = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -10,6 +20,16 @@ const getReservationsByCatway = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Récupère une réservation précise d'un catway.
+ * @route GET /catways/:id/reservations/:idReservation
+ * @param {Object} req - Requête Express (req.params.id, req.params.idReservation).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la réservation, ou 404 si introuvable.
+ */
 
 const getReservationById = async (req, res, next) => {
   try {
@@ -23,6 +43,16 @@ const getReservationById = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Crée une nouvelle réservation sur un catway existant, en vérifiant l'absence de conflit de dates.
+ * @route POST /catways/:id/reservations
+ * @param {Object} req - Requête Express (req.body = { clientName, boatName, startDate, endDate }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la réservation créée (201).
+ */
 
 const createReservation = async (req, res, next) => {
   try {
@@ -57,6 +87,16 @@ const createReservation = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Modifie une réservation existante (champs optionnels, avec re-vérification des conflits de dates si les dates changent).
+ * @route PUT /catways/:id/reservations/:idReservation
+ * @param {Object} req - Requête Express (req.body = { clientName?, boatName?, startDate?, endDate? }).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Réponse JSON contenant la réservation modifiée, ou 404 si introuvable.
+ */
 
 const updateReservation = async (req, res, next) => {
   try {
@@ -95,6 +135,16 @@ const updateReservation = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Supprime une réservation existante.
+ * @route DELETE /catways/:id/reservations/:idReservation
+ * @param {Object} req - Requête Express (req.params.id, req.params.idReservation).
+ * @param {Object} res - Réponse Express.
+ * @param {Function} next - Middleware suivant (gestion des erreurs).
+ * @returns {Promise<void>} Confirmation de suppression, ou 404 si introuvable.
+ */
 
 const deleteReservation = async (req, res, next) => {
   try {
